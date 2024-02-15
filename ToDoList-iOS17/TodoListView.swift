@@ -9,11 +9,17 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    let itemArray = ["To DO Monday", "Starting Tuesday", "Finishing Wednesday"]
+    var itemArray = ["To DO Monday", "Starting Tuesday", "Finishing Wednesday"]
+    
+    // Establish user defaults
+    let defaults = UserDefaults.standard
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
     }
     
     //MARK: - Tableview Datasource Methods
@@ -39,5 +45,38 @@ class TodoListViewController: UITableViewController {
         // Animation for deselecting selected row
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    
+    //MARK: - Add New Items
+    
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add New To-do Item", message: "", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            // What happens when user clicks on the "add item" button on our UIAlert
+            self.itemArray.append(textField.text!)
+            
+            // Save user defaults
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            
+            // Reloads the rows and the sections of the table taking into account new data that was created
+            self.tableView.reloadData()
+        }
+        
+        // Occurs right when we hit the "+" button
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        
+        alert.addAction(action)
+        
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
