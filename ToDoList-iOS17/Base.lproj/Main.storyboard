@@ -32,7 +32,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Todoey" id="yf2-n5-GaR">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="8aB-Mn-b9j">
-                            <color key="tintColor" systemColor="systemRedColor"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="addButtonPressed:" destination="EmF-oJ-qT9" id="lzg-6a-k2o"/>
                             </connections>
@@ -86,9 +86,6 @@
         </systemColor>
         <systemColor name="systemBlueColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
