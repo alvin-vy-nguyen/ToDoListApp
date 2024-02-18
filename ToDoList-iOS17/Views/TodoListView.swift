@@ -12,30 +12,27 @@ class TodoListViewController: UITableViewController {
     // Initialized an array of Item objects
     var itemArray = [Item]()
     
-    // Establish user defaults
-    let defaults = UserDefaults.standard
+    // .default is a Singleton, .userDomainMask is their homeDirectory
+    // Creates our own plist at the data location point
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //"To DO Monday", "Starting Tuesday", "Finishing Wednesday"
+        
         // Create a new item object of type Item from Item class
-        let newItem = Item()
-        newItem.title = "To DO Monday"
-        itemArray.append(newItem)
+//        let newItem = Item()
+//        newItem.title = "To DO Monday"
+//        itemArray.append(newItem)
+//        
+//        let newItem1 = Item()
+//        newItem1.title = "Starting Tuesday"
+//        itemArray.append(newItem1)
+//        
+//        let newItem2 = Item()
+//        newItem2.title = "Finishing Wednesday"
+//        itemArray.append(newItem2)
         
-        let newItem1 = Item()
-        newItem1.title = "Starting Tuesday"
-        itemArray.append(newItem1)
-        
-        let newItem2 = Item()
-        newItem2.title = "Finishing Wednesday"
-        itemArray.append(newItem2)
-        
-        // When app loads up, we look into our user defaults and pull whatever is there from previous session
-        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-            itemArray = items
-        }
-        
+        loadItems()
     }
     
     //MARK: - Tableview Datasource Methods
@@ -51,24 +48,18 @@ class TodoListViewController: UITableViewController {
         cell.textLabel?.text = item.title
         
         // Swift Ternary Operator, if item.done is true set to .checkmark else .none
-        cell.accessoryType = item.done == true ? .checkmark : .none // Does below more elegant
+        cell.accessoryType = item.done == true ? .checkmark : .none
         
         return cell
-        
     }
     
     //MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         // Gets the current item object thats selected
         // Reverses the state of the .done
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done // Better way of writing than below
-//        if itemArray[indexPath.row].done == false {
-//            itemArray[indexPath.row].done = true
-//        } else {
-//            itemArray[indexPath.row].done = false
-//        }
+        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-        tableView.reloadData()
+        saveItems()
         
         // Animation for deselecting selected row
         tableView.deselectRow(at: indexPath, animated: true)
@@ -89,11 +80,8 @@ class TodoListViewController: UITableViewController {
             newItem.title = textField.text!
             self.itemArray.append(newItem)
             
-            // Save user defaults
-            self.defaults.set(self.itemArray, forKey: "TodoListArray")
-            
-            // Reloads the rows and the sections of the table taking into account new data that was created
-            self.tableView.reloadData()
+            self.saveItems()
+       
         }
         
         // Occurs right when we hit the "+" button
@@ -107,5 +95,35 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    //MARK: - Model Manipulation Methods
+    
+    func saveItems() {
+        // Encodes the data to write to a plist
+        let encoder = PropertyListEncoder()
+        
+        // .encode and .write can throw, so we need to enclose them in a do/catch with a try
+        do {
+            let data = try encoder.encode(itemArray)
+            // Write data to data file path (creates a .plist upon writing)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding item array, \(error)")
+        }
+        
+        // Reloads the rows and the sections of the table taking into account new data that was created
+        self.tableView.reloadData()
+    }
+    
+    // Function that implements decoding
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print("error decoding item array, \(error)")
+            }
+        }
+    }
 }
 
