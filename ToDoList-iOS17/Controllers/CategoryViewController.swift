@@ -20,7 +20,7 @@ class CategoryViewController: UITableViewController {
         loadCategories()
     }
     
-    //MARK: - TabkeView Datasouce Methods
+    //MARK: - TableView Datasouce Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             return categoryArray.count
         }
@@ -58,6 +58,22 @@ class CategoryViewController: UITableViewController {
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
+    }
+    
+    //MARK: - TableView Delegate Methods
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Downcast to match the destination, navigates to ToDoListViewController
+        let destinationVC = segue.destination as! TodoListViewController
+        
+        // Identifies current row that is selected
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+        }
     }
     
     //MARK: - Data Manipulation Methods
