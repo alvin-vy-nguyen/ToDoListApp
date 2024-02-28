@@ -19,16 +19,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print(Realm.Configuration.defaultConfiguration.fileURL)
         
-        let data = Data()
-        data.name = "AlvinNameTest"
-        data.age = 10
-        
         do {
             let realm = try Realm()
-            // Commit current state to persistent storage
-            try realm.write {
-                realm.add(data)
-            }
         } catch {
             print("Error initialising new realm, \(error)")
         }

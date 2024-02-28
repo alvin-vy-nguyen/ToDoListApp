@@ -17,7 +17,7 @@ class TodoListViewController: UITableViewController {
     var selectedCategory : Category? {
         didSet {
             // This block happens as soon as selectedCategory gets set with a value
-            loadItems()
+            // loadItems()
         }
     }
     
@@ -88,11 +88,11 @@ class TodoListViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             // We create a new item object and append the item (that includes whatever the user types in)
-            let newItem = Item(context: self.context)
-            newItem.title = textField.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory
-            self.itemArray.append(newItem)
+//            let newItem = Item(context: self.context)
+//            newItem.title = textField.text!
+//            newItem.done = false
+//            newItem.parentCategory = self.selectedCategory
+//            self.itemArray.append(newItem)
             
             self.saveItems()
        
@@ -126,60 +126,60 @@ class TodoListViewController: UITableViewController {
     // Loading function that has an extenral parameter of "with" and a default value
     // of Item.fetchRequest()
     // Also specifies the type of the Fetch Request for our Item Object
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
-        // parentCategory of items with name property must match selected category
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-        
-        // Optional binding alternative for commented out block below
-        if let additionalPredicate = predicate {
-            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
-        } else {
-            request.predicate = categoryPredicate
-        }
-        
-//        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, predicate])
+//    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
+//        // parentCategory of items with name property must match selected category
+//        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
 //        
-//        request.predicate = compoundPredicate
-        
-        do {
-            // Save results of the fetch into itemArray
-            itemArray = try context.fetch(request)
-        } catch {
-            print("Error fetching data from context \(error)")
-        }
-        tableView.reloadData()
-    }
+//        // Optional binding alternative for commented out block below
+//        if let additionalPredicate = predicate {
+//            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+//        } else {
+//            request.predicate = categoryPredicate
+//        }
+//        
+////        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, predicate])
+////        
+////        request.predicate = compoundPredicate
+//        
+//        do {
+//            // Save results of the fetch into itemArray
+//            itemArray = try context.fetch(request)
+//        } catch {
+//            print("Error fetching data from context \(error)")
+//        }
+//        tableView.reloadData()
+//    }
 }
 
 //MARK: - Search Bar methods
-extension TodoListViewController: UISearchBarDelegate {
-    // Triggered when user taps on the search button
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request : NSFetchRequest<Item> = Item.fetchRequest()
-        
-        // %@ gets replaced by our "arguments", NSPredicate searches itemArray where the title contains what we have in searchBar when we search
-        // [cd] allows for case (upper/lower case) and diacritic (accents/marks) insensitivity
-        // Query generation with NSPredicate
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        
-        // Sort Descriptor for our query
-        // .sortDescriptors is plural and requires an array
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        loadItems(with: request, predicate: predicate)
-    }
-    
-    // Only triggers when text changes (not on first load-up when its empty)
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0 {
-            // Fetches all items with our default query
-            loadItems()
-            
-            // Runs this method on the main Queue
-            DispatchQueue.main.async {
-                // No longer have cursor & keyboard goes away
-                searchBar.resignFirstResponder()
-            }
-        }
-    }
-}
+//extension TodoListViewController: UISearchBarDelegate {
+//    // Triggered when user taps on the search button
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//        let request : NSFetchRequest<Item> = Item.fetchRequest()
+//        
+//        // %@ gets replaced by our "arguments", NSPredicate searches itemArray where the title contains what we have in searchBar when we search
+//        // [cd] allows for case (upper/lower case) and diacritic (accents/marks) insensitivity
+//        // Query generation with NSPredicate
+//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+//        
+//        // Sort Descriptor for our query
+//        // .sortDescriptors is plural and requires an array
+//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+//        
+//        loadItems(with: request, predicate: predicate)
+//    }
+//    
+//    // Only triggers when text changes (not on first load-up when its empty)
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if searchBar.text?.count == 0 {
+//            // Fetches all items with our default query
+//            loadItems()
+//            
+//            // Runs this method on the main Queue
+//            DispatchQueue.main.async {
+//                // No longer have cursor & keyboard goes away
+//                searchBar.resignFirstResponder()
+//            }
+//        }
+//    }
+//}
