@@ -22,10 +22,6 @@ class TodoListViewController: UITableViewController {
             loadItems()
         }
     }
-    
-    // .default is a Singleton, .userDomainMask is their homeDirectory
-    // Creates our own plist at the data location point
-    // let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,21 +53,21 @@ class TodoListViewController: UITableViewController {
     //MARK: - TableView Delegate Methods
     // Gets the current item object thats selected
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // Example of updating title in our database
-        // itemArray[indexPath.row].setValue("Completed", forKey: "title")
         
-        // Reverses the state of the .done
-        // Sets the value of our .done key in our database to either 0 or 1
-//        todoItems[indexPath.row].done = !todoItems[indexPath.row].done
+        // Check if todoItems is not nil
+        if let item = todoItems?[indexPath.row] {
+            do {
+                // If not nil, we update, and reverse the current bool for checkmark status
+                try realm.write {
+                    //realm.delete(item)
+                    item.done = !item.done
+                }
+            } catch {
+                print("Error saving done status, \(error)")
+            }
+        }
         
-        // Below is to remove the data from our database (from our currently selected row)
-        // Have to call context.delete first, to make sure index isn't out of range when we call itemArray.remove
-        /*context.delete(itemArray[indexPath.row])*/ // Note, this does nothing until we SAVE the context
-        // Below just modifies the itemArray for display on our app
-        // itemArray.remove(at: indexPath.row)
-        
-        // Calls context.save() to save our modifications to the context
-        // saveItems()
+        tableView.reloadData()
         
         // Animation for deselecting selected row
         tableView.deselectRow(at: indexPath, animated: true)
