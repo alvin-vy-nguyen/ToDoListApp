@@ -16,7 +16,7 @@ class CategoryViewController: UITableViewController {
     // Results are auto-updating container types (lists, arrays, etc)
     // Also don't need to append since it auto-updates
     var categories: Results<Category>?
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -25,9 +25,9 @@ class CategoryViewController: UITableViewController {
     
     //MARK: - TableView Datasouce Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            // If not nil return categories, if nil return 1
-            return categories?.count ?? 1
-        }
+        // If not nil return categories, if nil return 1
+        return categories?.count ?? 1
+    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
@@ -94,7 +94,6 @@ class CategoryViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    
     func loadCategories() {
         
         // Returns a results object that contains categories
@@ -103,6 +102,20 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
-    //MARK: - TableView Delegate Methods
-    // What should happen when we click on one of the cells
+    //MARK: - SwipeCellDelegateMethods
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        guard editingStyle == .delete else {return}
+        
+        if let selecteditem = categories?[indexPath.row] {
+            do {
+                try realm.write{
+                    realm.delete(selecteditem)
+                }
+            } catch {
+                print("error reversing condition \(error.localizedDescription)")
+            }
+            tableView.reloadData()
+        }
+    }
 }
