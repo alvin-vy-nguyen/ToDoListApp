@@ -89,7 +89,7 @@ class TodoListViewController: UITableViewController {
                     try self.realm.write {
                         let newItem = Item()
                         newItem.title = textField.text!
-                        newItem.done = false
+                        newItem.dateCreated = Date()
                         // Append new item to Category list, NOTE: this is not a Results container but an Item object
                         currentCategory.items.append(newItem)
                     }
@@ -124,34 +124,29 @@ class TodoListViewController: UITableViewController {
 }
 
 //MARK: - Search Bar methods
-//extension TodoListViewController: UISearchBarDelegate {
-//    // Triggered when user taps on the search button
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        let request : NSFetchRequest<Item> = Item.fetchRequest()
-//        
-//        // %@ gets replaced by our "arguments", NSPredicate searches itemArray where the title contains what we have in searchBar when we search
-//        // [cd] allows for case (upper/lower case) and diacritic (accents/marks) insensitivity
-//        // Query generation with NSPredicate
-//        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-//        
-//        // Sort Descriptor for our query
-//        // .sortDescriptors is plural and requires an array
-//        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-//        
-//        loadItems(with: request, predicate: predicate)
-//    }
-//    
-//    // Only triggers when text changes (not on first load-up when its empty)
-//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        if searchBar.text?.count == 0 {
-//            // Fetches all items with our default query
-//            loadItems()
-//            
-//            // Runs this method on the main Queue
-//            DispatchQueue.main.async {
-//                // No longer have cursor & keyboard goes away
-//                searchBar.resignFirstResponder()
-//            }
-//        }
-//    }
-//}
+extension TodoListViewController: UISearchBarDelegate {
+    // Triggered when user taps on the search button
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        // Don't need to call loadItems since we're doing it within our selected category
+        // Filter by property "title" [cd] substituted (%@") by what's in the search bar
+        // Then we sort by that property by ascending
+//        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        
+        tableView.reloadData()
+    }
+    
+    // Only triggers when text changes (not on first load-up when its empty)
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            // Fetches all items with our default query
+            loadItems()
+            
+            // Runs this method on the main Queue
+            DispatchQueue.main.async {
+                // No longer have cursor & keyboard goes away
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+}

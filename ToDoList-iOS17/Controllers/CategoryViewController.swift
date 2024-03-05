@@ -16,8 +16,6 @@ class CategoryViewController: UITableViewController {
     // Results are auto-updating container types (lists, arrays, etc)
     // Also don't need to append since it auto-updates
     var categories: Results<Category>?
-    
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
 
     override func viewDidLoad() {
         super.viewDidLoad()
