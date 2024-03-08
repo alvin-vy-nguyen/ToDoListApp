@@ -8,7 +8,7 @@
 import UIKit
 import RealmSwift
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: SwipeTableViewController {
     
     // Results container filled with items
     var todoItems: Results<Item>?
@@ -32,9 +32,12 @@ class TodoListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
             return todoItems?.count ?? 1
         }
-        
+    
+    // Populates tableView with items
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        
+        // Taps into the cell in our superView class (SwipeTableViewController)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         // Optional binding here to avoid making our accessory methods an optional as well
         if let item = todoItems?[indexPath.row] {
@@ -51,7 +54,7 @@ class TodoListViewController: UITableViewController {
     }
     
     //MARK: - TableView Delegate Methods
-    // Gets the current item object thats selected
+    // Occurs when user taps on an item, reverse it's current accessory
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         // Check if todoItems is not nil
@@ -121,6 +124,19 @@ class TodoListViewController: UITableViewController {
 
         tableView.reloadData()
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let selecteditem = todoItems?[indexPath.row] {
+            do {
+                try realm.write {
+                    realm.delete(selecteditem)
+                }
+            } catch {
+                print("Error reversing condition \(error.localizedDescription)")
+            }
+            tableView.reloadData()
+        }
+    }
 }
 
 //MARK: - Search Bar methods
@@ -130,7 +146,7 @@ extension TodoListViewController: UISearchBarDelegate {
         // Don't need to call loadItems since we're doing it within our selected category
         // Filter by property "title" [cd] substituted (%@") by what's in the search bar
         // Then we sort by that property by ascending
-//        todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
+        // todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "title", ascending: true)
         todoItems = todoItems?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
         
         tableView.reloadData()
