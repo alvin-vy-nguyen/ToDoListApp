@@ -1,5 +1,15 @@
 {
+  "originHash" : "d0bebab7e21279021db58b37eacd8802a353d3bb331ad98c0deb6874ba344436",
   "pins" : [
+    {
+      "identity" : "chameleon",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/drasticactions/Chameleon.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "5ad13706439f111291484dac893a79945c1e4b8f"
+      }
+    },
     {
       "identity" : "realm-core",
       "kind" : "remoteSourceControl",
@@ -19,5 +29,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

@@ -10,6 +10,7 @@ import RealmSwift
 
 class Category: Object {
     @objc dynamic var name: String = ""
+    @objc dynamic var color: String = ""
     // Creating forward relationship
     // List is the container type in Realm used to fine to-many relationships, like arrays
     // Each Category has a list of items
