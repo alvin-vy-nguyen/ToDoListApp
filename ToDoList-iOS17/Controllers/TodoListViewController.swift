@@ -7,12 +7,13 @@
 
 import UIKit
 import RealmSwift
+import ChameleonSwift
 
 class TodoListViewController: SwipeTableViewController {
     
     // Results container filled with items
     var todoItems: Results<Item>?
-    
+
     let realm = try! Realm()
     
     // Optional until intialized (or selected from CategoryViewController)
@@ -22,16 +23,17 @@ class TodoListViewController: SwipeTableViewController {
             loadItems()
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.separatorStyle = .none
         //print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
     }
     
     //MARK: - Tableview Datasource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return todoItems?.count ?? 1
-        }
+        return todoItems?.count ?? 1
+    }
     
     // Populates tableView with items
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -41,7 +43,14 @@ class TodoListViewController: SwipeTableViewController {
         
         // Optional binding here to avoid making our accessory methods an optional as well
         if let item = todoItems?[indexPath.row] {
+            
             cell.textLabel?.text = item.title
+            
+            // We can force unwrap since we have optional binding on top, selectedCategory comes from todoItems anyways so its safe
+            if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(todoItems!.count)) {
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
             
             // Swift Ternary Operator, if item.done is true set to .checkmark else .none
             cell.accessoryType = item.done == true ? .checkmark : .none
@@ -49,7 +58,7 @@ class TodoListViewController: SwipeTableViewController {
             cell.textLabel?.text = "No Items Added"
         }
         
-
+        
         return cell
     }
     
@@ -121,7 +130,7 @@ class TodoListViewController: SwipeTableViewController {
         
         // All items that belong to current selected category, sorted by title ascending
         todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
-
+        
         tableView.reloadData()
     }
     
