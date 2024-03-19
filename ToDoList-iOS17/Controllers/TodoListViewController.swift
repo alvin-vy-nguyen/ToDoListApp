@@ -16,6 +16,8 @@ class TodoListViewController: SwipeTableViewController {
 
     let realm = try! Realm()
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     // Optional until intialized (or selected from CategoryViewController)
     var selectedCategory : Category? {
         didSet {
@@ -28,6 +30,32 @@ class TodoListViewController: SwipeTableViewController {
         super.viewDidLoad()
         tableView.separatorStyle = .none
         //print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if let colorHex = selectedCategory?.color {
+            
+            // Already inside optional binding, safe to un-wrap
+            title = selectedCategory!.name
+            
+            // Guarding against nil
+            guard let navBarAppearance = navigationController?.navigationBar.scrollEdgeAppearance else {fatalError("Navigation controller does not exist.")}
+            
+            guard let navBar =  navigationController?.navigationBar else {fatalError("Navigation controller does not exist.")}
+            
+            if let navBarColor = UIColor(hexString: colorHex) {
+                
+                navBarAppearance.backgroundColor = navBarColor
+                
+                // Affects all navBar buttons
+                navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+                
+                // Using large titles, so we have to use the correct property
+                navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+                
+                searchBar.barTintColor = navBarColor
+            }
+        }
     }
     
     //MARK: - Tableview Datasource Methods
@@ -57,8 +85,6 @@ class TodoListViewController: SwipeTableViewController {
         } else {
             cell.textLabel?.text = "No Items Added"
         }
-        
-        
         return cell
     }
     

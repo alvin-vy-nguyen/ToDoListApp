@@ -8,6 +8,7 @@
 import UIKit
 import RealmSwift
 import Chameleon
+import ChameleonSwift
 
 class CategoryViewController: SwipeTableViewController {
     
@@ -27,6 +28,11 @@ class CategoryViewController: SwipeTableViewController {
         tableView.separatorStyle = .none
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        guard let navBar = navigationController?.navigationBar.scrollEdgeAppearance else {fatalError("Navigation controller does not exist.")}
+        navBar.backgroundColor = UIColor(hexString: "1D9BF6")
+    }
+    
     //MARK: - TableView Datasouce Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // If not nil return categories, if nil return 1
@@ -41,8 +47,12 @@ class CategoryViewController: SwipeTableViewController {
         if let categories = categories?[indexPath.row]  {
             // We modify the cell even more additionally outside of the super class
             cell.textLabel?.text = categories.name
+            
+            guard let categoryColor = UIColor(hexString: categories.color) else {fatalError()}
+            
             // Initializes the hex value we got using the Chameleon method at creation of category
-            cell.backgroundColor = UIColor(hexString: categories.color)
+            cell.backgroundColor = categoryColor
+            cell.textLabel?.textColor = ContrastColorOf(categoryColor, returnFlat: true)
         }
         return cell
     }
